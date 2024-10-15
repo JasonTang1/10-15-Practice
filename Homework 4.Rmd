@@ -1,0 +1,86 @@
+---
+title: "Homework 4"
+author: "Jason Tang"
+date: "2024-10-08"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, include=FALSE}
+library(tidyverse)
+library(lubridate)
+library(ggplot2)
+library(kableExtra)
+
+
+Homework_Bonds <- read_csv("Homework1_Bonds.csv")
+Homework_Food <- read_csv("Homework4_food.csv")
+```
+
+# Part 1
+
+## Question 1
+```{r}
+Travis_County <- Homework_Bonds[Homework_Bonds$County=="Travis",]
+Travis_County$ElectionDate <- mdy(Travis_County$ElectionDate)
+Travis_County <- Travis_County[-(Travis_County$ElectionDate==max(Travis_County$ElectionDate)),]
+```
+In my Travis County tibble, there are 311 bonds to investigate. I removed one bond in Travis County because the bond was in a year that doesn't make sense.
+
+Question 2
+```{r}
+table(month(Travis_County$ElectionDate, label=TRUE))
+table(wday(Travis_County$ElectionDate, label = TRUE))
+```
+The most number of bond election dates occurred during May, with Saturday having the most election dates.
+
+## Question 3
+```{r}
+barplot(prop.table(table(Travis_County$Result, month(Travis_County$ElectionDate, label=TRUE)),2)
+,main='Bonds Carried Across Months', ylab='Proportion', col=c('#018571', '#b2abd2'), xlab='Months')
+
+barplot(prop.table(table(Travis_County$Result, wday(Travis_County$ElectionDate, label = TRUE)),2)
+,main='Bonds Carried Across Days of the Week', ylab='Proportion', col=c('#018571', '#b2abd2'), xlab='Day of the Week')
+```
+
+Most bonds have a high percentage of being carried. It should be noted that no bonds were carried during the months of August and December. It should also be noted that bonds weren't carried out on Monday, Wednesday, and Thursday.
+
+
+# Part 2
+
+## Question 4
+```{r}
+Children <- select(Homework_Food, 10, 11, 12, 13, 1, 2, 3)
+colnames(Children)[1:4] <- c('Low Access Numbers Children 1 Mile', 'Low Access Numbers Children 1/2 Mile', 'Low Access Numbers Children 10 Mile', 'Low Access Numbers Children 20 Mile')
+
+Children
+```
+I selected the children data set to analyze.
+
+## Question 5
+```{r}
+#put all the column names into "names_to" and all the values into "values_to"
+Children2 <- pivot_longer(Children, cols = c('Low Access Numbers Children 1 Mile', 'Low Access Numbers Children 1/2 Mile', 'Low Access Numbers Children 10 Mile', 'Low Access Numbers Children 20 Mile'), names_to = 'distance', values_to = 'pop_count')
+
+Children2$distance <- parse_number(Children2$distance)
+head(Children2,10)
+```
+The tibble shows the first 10 outputs with the distance and pop_count variable included in the dataset.
+
+## Question 6
+```{r}
+w = round(mean(Children$`Low Access Numbers Children 1/2 Mile`),2)
+x = round(mean(Children$`Low Access Numbers Children 1 Mile`),2)
+y = round(mean(Children$`Low Access Numbers Children 10 Mile`),2)
+z = round(mean(Children$`Low Access Numbers Children 20 Mile`),2)
+
+Tables <- data.frame(
+  distance = c('1/2 Mile', '1 Mile', '10 Mile', '20 Mile'),
+  'mean population for children' = c(w, x, y, z)
+)
+knitr::kable(Tables, col.names = gsub("[.]", " ", names(Tables)))
+```
+The table shows the mean population count and the distances for children with low access to the supermarket.
