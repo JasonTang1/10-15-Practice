@@ -83,4 +83,4 @@ Tables <- data.frame(
 )
 knitr::kable(Tables, col.names = gsub("[.]", " ", names(Tables)))
 ```
-The table shows the mean population count and the distances for children with low access to the supermarket.
+The table shows the mean population count and the distances for children with low access to the supermarket..
